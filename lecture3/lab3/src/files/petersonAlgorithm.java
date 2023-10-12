@@ -1,10 +1,12 @@
 package files;
-import java.util.LinkedList;
-import java.util.Queue;
+
 public class petersonAlgorithm {
-    private boolean[] flags;
-    private Queue<Integer> turns = new LinkedList<>(); // used to see whos turn it is next
+    volatile static private boolean[] flags = new boolean[2];// we can only have 2 threads in this position
+    volatile static public int turn = 0; // used to see whos turn it is next
     public petersonAlgorithm(){ 
+    }
+    public void addFlag(int threadID){
+        flags[threadID] = false;
     }
     public void raiseFlag(int threadID){
         flags[threadID] = true;
@@ -12,16 +14,19 @@ public class petersonAlgorithm {
     public void lowerFlag(int threadID){
         flags[threadID] = false;
     }
-    public void queueThread(int threadID){
-        turns.add(threadID);
+    public void setTurn(int threadID){
+        turn = threadID;
     }
-    public void removeThread(int threadID){
-        turns.remove();
-    }
-    public void enterCriticalSection(int threadID){ // this function is used as a entry point to run a critical section
-        while (!(turns.peek() == threadID && flags[threadID] == true)){
+    public boolean enterCriticalSection(int threadID){ // this function is used as a entry point to run a critical section
+            if (turn == threadID && flags[threadID] == true){
 
-        }
+                return true;
+            }
+            else{
+                return false;
+            }
+
+        
     }
     
 }

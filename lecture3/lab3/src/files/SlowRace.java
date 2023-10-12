@@ -5,13 +5,14 @@ public class SlowRace {
 public static void main(String args []) throws Exception { 
 petersonAlgorithm peterson = new petersonAlgorithm();
 MyThread.count = 0;
-MyThread thread1 = new MyThread();
+MyThread thread1 = new MyThread(peterson);
 thread1.name = "A";
 thread1.threadNumber =0;
-MyThread thread2 = new MyThread();
+thread1.otherThreadID = 1;
+MyThread thread2 = new MyThread(peterson);
 thread2.name = "B";
 thread2.threadNumber = 1;
-
+thread2.otherThreadID = 0;
 thread1.start();
 thread2.start();
 thread2.join();
@@ -24,6 +25,7 @@ class MyThread extends Thread {
 volatile static int count;
 String name;
 int threadNumber;
+int otherThreadID;
 petersonAlgorithm obj;
 
 public MyThread(petersonAlgorithm peter){
@@ -32,16 +34,22 @@ public MyThread(petersonAlgorithm peter){
 }
 
 public void run() {
+     obj.addFlag(threadNumber);
 for(int i = 0 ; i < 10 ; i++) { 
-     obj.queueThread(threadNumber);
      obj.raiseFlag(threadNumber);
+     while (!obj.enterCriticalSection(threadNumber)){
+
+     };
 delay();
 int x = count;
 System.out.println("Thread " + name + " read " + x);
 delay();
 count = x + 1;
 System.out.println("Thread " + name + " wrote " + (x + 1));
+obj.lowerFlag(threadNumber);
+obj.setTurn(otherThreadID);
 }
+
 }
 
 void delay() {

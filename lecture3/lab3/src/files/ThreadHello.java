@@ -1,3 +1,4 @@
+package files;
 public class ThreadHello {
 public static void main(String args []) throws Exception { 
 MyThread thread1 = new MyThread();
